@@ -1,0 +1,34 @@
+  {
+    "name": "Crowdference",
+    "version": "1.0.0",
+    "description": "Custom links",
+    "permissions": [
+      "activeTab",
+      "declarativeContent",
+      "storage"
+    ],
+    "background": {
+      "scripts": [
+        "background.js"
+      ],
+      "persistent": false
+    },
+    "browser_action": {
+      "default_popup": "popup.html",
+      "default_title": "Colaborative user-customized links between web pages",
+      "default_icon": {
+        "16": "images/ico16.png",
+        "32": "images/ico32.png",
+        "48": "images/ico48.png",
+        "128": "images/ico128.png"
+      }
+    },
+    "options_page": "options.html",
+    "icons": {
+      "16": "images/ico16.png",
+      "32": "images/ico32.png",
+      "48": "images/ico48.png",
+      "128": "images/ico128.png"
+    },
+    "manifest_version": 2
+  }
