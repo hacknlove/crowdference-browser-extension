@@ -3,6 +3,10 @@
     "version": "1.0.0",
     "description": "Custom links",
     "permissions": [
+      "http://localhost:2900/*",
+      "http://localhost:2800/*",
+      "*://*.crowdference.org/*",
+      "tabs",
       "activeTab",
       "declarativeContent",
       "storage"
