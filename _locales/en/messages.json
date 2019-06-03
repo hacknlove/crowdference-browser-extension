@@ -1,0 +1,11 @@
+{
+  "createLinkTitle": {
+    "message": "Link with..."
+  },
+  "toLinksTitle": {
+    "message": "Top 10 Related Links:"
+  },
+  "fromLinksTitle": {
+    "message": "Top 10 Related Backlinks:"
+  }
+}

@@ -1,5 +1,7 @@
 /* global chrome axios */
 
+APIURL = 'https://api.crowdference.org'
+
 var currentUrl
 
 const createLinkElement = function createLink (link) {
@@ -47,7 +49,7 @@ const createTabElement = function createLink (tab) {
 
   div.addEventListener('click', async (event) => {
 
-    const response = await fetch(`http://localhost:2800/addLink`, {
+    const response = await fetch(`${APIURL}/addLink`, {
       method: 'POST',
       body: JSON.stringify({
         fromUrl: currentUrl,
@@ -90,7 +92,7 @@ const getTabs = function getTabs (notLinkableURLs) {
 }
 
 const getLinks = async function getLinks (url, notLinkableURLs) {
-  var response = await fetch(`http://localhost:2800/url/${encodeURIComponent(url)}`).then(res => res.json())
+  var response = await fetch(`${APIURL}/url/${encodeURIComponent(url)}`).then(res => res.json())
   if (!response) {
     return
   }
@@ -125,4 +127,10 @@ chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
 
   await getLinks(currentUrl, notLinkableURLs)
   getTabs(notLinkableURLs)
+})
+
+
+document.querySelectorAll('[data-locale]').forEach(elem => {
+  console.log(elem.dataset.locale)
+  elem.innerText = chrome.i18n.getMessage(elem.dataset.locale)
 })

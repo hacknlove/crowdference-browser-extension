@@ -1,0 +1,11 @@
+{
+  "createLinkTitle": {
+    "message": "Enlazar con..."
+  },
+  "toLinksTitle": {
+    "message": "Páginas enlazadas desde ésta:"
+  },
+  "fromLinksTitle": {
+    "message": "Páginas enlazadas a ésta:"
+  }
+}
