@@ -1,31 +1,128 @@
 /* global chrome axios */
 
-let bkg = chrome.extension.getBackgroundPage()
+var currentUrl
 
-let fromUrl = document.getElementById('fromUrl')
-let toUrl = document.getElementById('toUrl')
+const createLinkElement = function createLink (link) {
+  const div = document.createElement('div')
+  const title = document.createElement('div')
+  const url = document.createElement('a')
 
-function htmlToElement (html) {
-  var template = document.createElement('template');
-  html = html.trim(); // Never return a text node of whitespace as the result
-  template.innerHTML = html;
-  return template.content.firstChild;
+  if (!link.url[0].match(/^http(s?):\/\//)) {
+    link.url[0] = 'http://' + link.url[0]
+  }
+
+  title.innerText = link.title
+  url.innerText = link.url[0]
+
+  div.appendChild(title)
+  div.appendChild(url)
+
+
+
+  div.addEventListener('click', (event) => {
+
+    console.log(link.url[0])
+    chrome.tabs.create({
+      url: link.url[0],
+      active: false
+    })
+  })
+
+  return div
+}
+const createTabElement = function createLink (tab) {
+
+  const div = document.createElement('div')
+  const img = document.createElement('img')
+  const title = document.createElement('div')
+  const url = document.createElement('a')
+
+  img.src = tab.favIconUrl
+  title.innerText = tab.title
+  url.innerText = tab.url
+
+  div.appendChild(img)
+  div.appendChild(title)
+  div.appendChild(url)
+
+  div.addEventListener('click', async (event) => {
+
+    const response = await fetch(`http://localhost:2800/addLink`, {
+      method: 'POST',
+      body: JSON.stringify({
+        fromUrl: currentUrl,
+        toUrl: tab.url
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    console.log(response)
+  })
+
+  return div
+}
+
+const insertTabs = function (options) {
+  options.tabs.forEach(tab => {
+    if (options.notLinkableURLs[tab.url] === true) {
+      return
+    }
+    options.notLinkableURLs[tab.url] = true
+    options.container.insertAdjacentElement('beforeend', createTabElement(tab))
+  })
+}
+
+const getTabs = function getTabs (notLinkableURLs) {
+  const linkThisWith = document.getElementById('linkThisWith')
+  chrome.tabs.query({
+    status: 'complete',
+    url: ['http://*/*', 'https://*/*'],
+  }, tabs => {
+    insertTabs({
+      tabs: tabs,
+      container: linkThisWith,
+      notLinkableURLs
+    })
+  })
+
+}
+
+const getLinks = async function getLinks (url, notLinkableURLs) {
+  var response = await fetch(`http://localhost:2800/url/${encodeURIComponent(url)}`).then(res => res.json())
+  if (!response) {
+    return
+  }
+  insertLinks({
+    links: response.toUrl,
+    container: document.getElementById('toUrl'),
+    notLinkableURLs
+  })
+
+  insertLinks({
+    links: response.fromUrl,
+    container: document.getElementById('fromUrl'),
+    notLinkableURLs
+  })
+}
+
+const insertLinks = function (options) {
+  options.links.forEach( link => {
+
+    link.url.forEach(url => {
+      options.notLinkableURLs[url] = true
+    })
+
+    options.container.insertAdjacentElement('beforeend', createLinkElement(link))
+  })
 }
 
 chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
+  currentUrl = tabs[0].url
+  const notLinkableURLs = {}
+  notLinkableURLs[currentUrl] = true
 
-  var response = await axios.get(`http://localhost:2800/url/${encodeURIComponent(tabs[0].url)}`)
-
-  if (!response.data) {
-    return addUrl.classList.remove('hidden')
-  }
-
-  response.data.toUrl.forEach(function (url) {
-    console.log(url)
-    toUrl.insertAdjacentHTML('beforeend', `<li>${url.title}</li>`)
-  })
-
-  response.data.fromUrl.forEach(function (url) {
-    fromUrl.insertAdjacentHTML('beforeend', `<li>${url.title}</li>`)
-  })
+  await getLinks(currentUrl, notLinkableURLs)
+  getTabs(notLinkableURLs)
 })

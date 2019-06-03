@@ -2,22 +2,22 @@
 <html>
 
 <head>
-  <script src="extlib/axios.min.js"></script>
-
-  <style>
-    body {
-      width: 300px;
-    }
-    .hidden {
-      display: none
-    }
-  </style>
+  <link rel="stylesheet" href="popup.css">
 </head>
 
 <body>
-  <button id="addUrl" class="hidden">Add URL to crowdference</button>
-  <ul id="fromUrl"></ul>
-  <ul id="toUrl"></ul>
+  <h3>Crowdference</h3>
+  <div id="menu">
+    <div id="linkThisWith">
+      <h4>Link this with</h4>
+    </div>
+    <div id="toUrl">
+      <h4>Top 10 Related links</h4>
+    </div>
+    <div id="fromUrl">
+      <h4>Top 10 Related backlinks</h4>
+    </div>
+  </div>
   <script src="popup.js"></script>
 </body>
 

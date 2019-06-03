@@ -1,0 +1,50 @@
+body {
+  width: 370px;
+  background: white;
+  margin: 0;
+}
+.hidden {
+  display: none
+}
+
+#menu>div {
+  border-bottom: 1px solid #e8eaed;
+}
+#menu>div:last-child {
+  border-bottom: 0;
+}
+h3, h4 {
+  padding: 5px 15px;
+  margin: 0;
+}
+#menu>div>div {
+  position: relative;
+  padding: 5px 30px;
+  cursor: pointer;
+  font-size: 14px;
+}
+#menu>div>div>img {
+  position: absolute;
+  top: 7px;
+  height: 16px;
+  left: 7px;
+}
+#menu>div>div>div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #0d14a5;
+}
+#menu>div>div>a {
+  display: block;
+  font-size: 12px;
+  color: #006921;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+#menu>div>div:hover {
+  background: #e8eaed;
+}
