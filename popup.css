@@ -2,12 +2,12 @@ body {
   width: 370px;
   background: white;
   margin: 0;
-}
-.hidden {
-  display: none
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
 
 #menu>div {
+  width: 370px;
   border-bottom: 1px solid #e8eaed;
 }
 #menu>div:last-child {
