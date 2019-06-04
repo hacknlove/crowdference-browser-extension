@@ -1,6 +1,6 @@
   {
     "name": "Crowdference",
-    "version": "1.1.2",
+    "version": "1.1.4",
     "description": "Custom links",
     "permissions": [
       "http://localhost:2900/*",
@@ -27,8 +27,5 @@
       "128": "images/ico128.png"
     },
     "default_locale": "en",
-    "manifest_version": 2,
-    "web_accessible_resources": [
-      "node_modules/webextension-polyfill/dist/browser-polyfill.js"
-    ]
+    "manifest_version": 2
   }
