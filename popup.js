@@ -1,4 +1,4 @@
-/* global chrome axios */
+/* global browser */
 
 APIURL = 'https://api.crowdference.org'
 
@@ -24,7 +24,7 @@ const createLinkElement = function createLink (link) {
   div.addEventListener('click', (event) => {
 
     console.log(link.url[0])
-    chrome.tabs.create({
+    browser.tabs.create({
       url: link.url[0],
       active: false
     })
@@ -67,49 +67,48 @@ const createTabElement = function createLink (tab) {
 }
 
 const insertTabs = function (options) {
+  var inserted = false
   options.tabs.forEach(tab => {
     if (options.notLinkableURLs[tab.url] === true) {
       return
     }
+    inserted = true
     options.notLinkableURLs[tab.url] = true
     options.container.insertAdjacentElement('beforeend', createTabElement(tab))
   })
-}
-
-const getTabs = function getTabs (notLinkableURLs) {
-  const linkThisWith = document.getElementById('linkThisWith')
-  chrome.tabs.query({
-    status: 'complete',
-    url: ['http://*/*', 'https://*/*'],
-  }, tabs => {
-    insertTabs({
-      tabs: tabs,
-      container: linkThisWith,
-      notLinkableURLs
-    })
-  })
-
+  if (!inserted) {
+    options.container.remove()
+  }
 }
 
 const getLinks = async function getLinks (url, notLinkableURLs) {
+  const fromUrl = document.getElementById('fromUrl')
+  const toUrl = document.getElementById('toUrl')
   var response = await fetch(`${APIURL}/url/${encodeURIComponent(url)}`).then(res => res.json())
   if (!response) {
+    fromUrl.remove()
+    toUrl.remove()
     return
   }
   insertLinks({
     links: response.toUrl,
-    container: document.getElementById('toUrl'),
+    container: toUrl,
     notLinkableURLs
   })
 
   insertLinks({
     links: response.fromUrl,
-    container: document.getElementById('fromUrl'),
+    container: fromUrl,
     notLinkableURLs
   })
 }
 
 const insertLinks = function (options) {
+  console.log(options)
+  console.log(options.links.length)
+  if (!options.links.length) {
+    return options.container.remove()
+  }
   options.links.forEach( link => {
 
     link.url.forEach(url => {
@@ -120,17 +119,36 @@ const insertLinks = function (options) {
   })
 }
 
-chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
+
+
+browser.tabs.query({ active: true, currentWindow: true }).then(async function (tabs) {
   currentUrl = tabs[0].url
+
+  if (!currentUrl.match(/^http/)) {
+    browser.tabs.create({
+      url: 'https://crowdference.org'
+    })
+    return window.close()
+  }
+
   const notLinkableURLs = {}
   notLinkableURLs[currentUrl] = true
 
   await getLinks(currentUrl, notLinkableURLs)
-  getTabs(notLinkableURLs)
+
+
+  insertTabs({
+    container: document.getElementById('linkThisWith'),
+    tabs: await browser.tabs.query({
+      status: 'complete',
+      url: ['http://*/*', 'https://*/*'],
+    }),
+    notLinkableURLs
+  })
+
 })
 
 
 document.querySelectorAll('[data-locale]').forEach(elem => {
-  console.log(elem.dataset.locale)
-  elem.innerText = chrome.i18n.getMessage(elem.dataset.locale)
+  elem.innerText = browser.i18n.getMessage(elem.dataset.locale)
 })
