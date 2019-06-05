@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hacknlove/crowdference-chrome.git"
+    "url": "git+https://github.com/hacknlove/crowdference-browser-extension.git"
   },
   "author": "",
   "license": "unlicense",
   "bugs": {
-    "url": "https://github.com/hacknlove/crowdference-chrome/issues"
+    "url": "https://github.com/hacknlove/crowdference-browser-extension/issues"
   },
-  "homepage": "https://github.com/hacknlove/crowdference-chrome#readme",
+  "homepage": "https://github.com/hacknlove/crowdference-browser-extension#readme",
   "devDependencies": {
     "@types/chrome": "^0.0.81",
     "@types/node": "^11.11.3",
