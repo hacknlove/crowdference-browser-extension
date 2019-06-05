@@ -16,5 +16,8 @@
   },
   "serverProblems": {
     "message": "Error del sistema"
+  },
+  "linkAdded": {
+    "message": "Enlace agregado"
   }
 }

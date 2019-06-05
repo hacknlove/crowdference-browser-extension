@@ -16,5 +16,8 @@
   },
   "serverProblems": {
     "message": "Sistem Error"
+  },
+  "linkAdded": {
+    "message": "Link added"
   }
 }

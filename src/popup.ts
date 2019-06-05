@@ -40,8 +40,6 @@ const createH4 = function createH4(message: string): HTMLElement {
 
 const error = function error (message: string) {
   const menu = cleanMenu()
-  console.log(message)
-  console.log(browser.i18n.getMessage(message))
   menu.appendChild(createH4(browser.i18n.getMessage(message)))
   menu.addEventListener('click', function () {
     return window.close()
@@ -52,7 +50,7 @@ const createSection = function createDiv (title: string): HTMLElement {
   const div = document.createElement('div')
   const h4 = document.createElement('h4')
 
-  h4.innerText = title
+  h4.innerText = browser.i18n.getMessage(title)
 
   div.appendChild(h4)
 
@@ -77,7 +75,6 @@ const createLinkElement = function createLink (link: Link): HTMLElement {
 
 
   div.addEventListener('click', () => {
-    console.log(link.url[0])
     browser.tabs.create({
       url: link.url[0],
       active: false
@@ -103,7 +100,7 @@ const createTabElement = function createLink (tab: Tab): HTMLElement {
 
   div.addEventListener('click', async () => {
 
-    const response = await fetch(`${API_URL}/addLink`, {
+    const json = await fetch(`${API_URL}/addLink`, {
       method: 'POST',
       body: JSON.stringify({
         fromUrl: currentUrl,
@@ -114,10 +111,13 @@ const createTabElement = function createLink (tab: Tab): HTMLElement {
       }
     })
 
-    if (response.status !== 200) {
-      error('serverProblems')
+    if (json.status !== 200) {
+      return error('serverProblems')
     }
-    error('enlaceAgregado')
+    error('linkAdded')
+    setTimeout(()=>{
+      window.location.reload()
+    }, 1000)
   })
 
   return div
@@ -139,32 +139,30 @@ const insertTabs = function (options: InsertTabsOptions) {
 }
 
 const getLinks = async function getLinks(url: string, notLinkableURLs: { [key: string]: boolean}) {
-  var response = await fetch(`${API_URL}/url/${encodeURIComponent(url)}`).then(res => res.json())
-  console.log(response)
-  if (!response) {
-    return
-  }
-
+  var response = await fetch(`${API_URL}/url/${encodeURIComponent(url)}`)
   if (response.status !== 200) {
     throw new Error()
+  }
+  var json = await response.json()
+  if (!json) {
+    return
   }
 
   insertLinks({
     title: 'toLinksTitle',
-    links: response.toUrl,
+    links: json.toUrl,
     notLinkableURLs
   })
 
   insertLinks({
     title: 'fromLinksTitle',
-    links: response.fromUrl,
+    links: json.fromUrl,
     notLinkableURLs
   })
   return
 }
 
 const insertLinks = function (options: InsertLinksOptions) {
-  console.log(options)
   if (!options.links.length) {
     return
   }
@@ -177,7 +175,6 @@ const insertLinks = function (options: InsertLinksOptions) {
 
     container.insertAdjacentElement('beforeend', createLinkElement(link))
   })
-  console.log(container)
   document.getElementById('menu').appendChild(container)
 }
 
@@ -195,6 +192,7 @@ browser.tabs.query({ active: true, currentWindow: true })
   try {
     await getLinks(currentUrl, notLinkableURLs)
   } catch (e) {
+    console.log(e)
     error('serverProblems')
     return
   }
