@@ -23,6 +23,7 @@ module.exports = {
     // counter: path.join(sourceRootPath, 'ts', 'contentScripts', 'counter', 'index.tsx'),
     popup: path.join(sourceRootPath, 'popup.ts'),
   },
+  devtool: 'source-map',
   output: {
     path: distRootPath,
     filename: '[name].js',
@@ -32,7 +33,11 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.(js|ts|tsx)?$/, loader: "awesome-typescript-loader", exclude: /node_modules/ },
+      {
+        test: /\.(js|ts|tsx)?$/,
+        loader: "ts-loader",
+        exclude: /node_modules/
+      },
     ]
   },
   plugins: [
@@ -44,26 +49,11 @@ module.exports = {
       },
     ]),
     new webpack.DefinePlugin({
+      'API_URL': JSON.stringify(nodeEnv === 'production' ? 'https://api.crowdference.org' : 'http://api.crowdference.org.localhost.hacknlove.org'),
       'NODE_ENV': JSON.stringify(nodeEnv),
       'WEB_BROWSER': JSON.stringify(webBrowser),
     }),
   ],
-}
-
-if (nodeEnv === 'watch') {
-  module.exports.watch = true;
-  module.exports.plugins.push(
-    new ChromeExtensionReloader({
-      port: 9128,
-      reloadPage: true,
-      entries: {
-        background: 'background',
-        options: 'options',
-        popup: 'popup',
-        contentScript: ['counter'],
-      }
-    })
-  );
 }
 
 if (nodeEnv === 'production') {

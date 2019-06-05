@@ -7,5 +7,14 @@
   },
   "fromLinksTitle": {
     "message": "Páginas enlazadas a ésta:"
+  },
+  "nothingToDo": {
+    "message": "Esta url no ha sido aún añadida a crowdference, y no tienes ninguna pestaña que pueda ser usada para crear un nuevo enlace"
+  },
+  "notValidTab": {
+    "message": "Esta pestaña no puede ser usada en crowdference"
+  },
+  "serverProblems": {
+    "message": "Error del sistema"
   }
 }

@@ -7,5 +7,14 @@
   },
   "fromLinksTitle": {
     "message": "Top 10 Related Backlinks:"
+  },
+  "nothingToDo": {
+    "message": "This url has not been added yet to crowdference, and you have no other tab oppend that can be used to create a new link"
+  },
+  "notValidTab": {
+    "message": "This tab cannot be used in crowdference"
+  },
+  "serverProblems": {
+    "message": "Sistem Error"
   }
 }

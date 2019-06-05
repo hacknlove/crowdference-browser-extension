@@ -1,37 +1,65 @@
-/* global browser */
-
 // @ts-ignore
 import browser from '../node_modules/webextension-polyfill'
-
-const APIURL = 'https://api.crowdference.org'
-
+// @ts-ignore
+declare var API_URL: string
 
 var currentUrl: string
-
 interface Link {
   title: string
   url: Array<string>
 }
-
 interface Tab {
   favIconUrl: string
   title: string
   url: string
 }
-
 interface InsertTabsOptions {
   tabs: Array<Tab>
   notLinkableURLs: {[key: string]: boolean}
   container: HTMLElement
 }
-
 interface InsertLinksOptions {
   links: Array<Link>
-  container: HTMLElement,
+  title: string,
   notLinkableURLs: { [key: string]: boolean }
 }
 
-const createLinkElement = function createLink (link: Link) {
+const cleanMenu = function cleanMenu (): HTMLElement{
+  var myNode = document.getElementById("menu")
+  while (myNode.firstChild) {
+    myNode.removeChild(myNode.firstChild)
+  }
+  return myNode
+}
+const createH4 = function createH4(message: string): HTMLElement {
+  const h4 = document.createElement('h4')
+  h4.innerText = message
+
+  return h4
+}
+
+const error = function error (message: string) {
+  const menu = cleanMenu()
+  console.log(message)
+  console.log(browser.i18n.getMessage(message))
+  menu.appendChild(createH4(browser.i18n.getMessage(message)))
+  menu.addEventListener('click', function () {
+    return window.close()
+  })
+}
+
+const createSection = function createDiv (title: string): HTMLElement {
+  const div = document.createElement('div')
+  const h4 = document.createElement('h4')
+
+  h4.innerText = title
+
+  div.appendChild(h4)
+
+  return div
+}
+
+const createLinkElement = function createLink (link: Link): HTMLElement {
   const div = document.createElement('div')
   const title = document.createElement('div')
   const url = document.createElement('a')
@@ -58,7 +86,7 @@ const createLinkElement = function createLink (link: Link) {
 
   return div
 }
-const createTabElement = function createLink (tab: Tab) {
+const createTabElement = function createLink (tab: Tab): HTMLElement {
 
   const div = document.createElement('div')
   const img = document.createElement('img')
@@ -75,7 +103,7 @@ const createTabElement = function createLink (tab: Tab) {
 
   div.addEventListener('click', async () => {
 
-    const response = await fetch(`${APIURL}/addLink`, {
+    const response = await fetch(`${API_URL}/addLink`, {
       method: 'POST',
       body: JSON.stringify({
         fromUrl: currentUrl,
@@ -86,7 +114,10 @@ const createTabElement = function createLink (tab: Tab) {
       }
     })
 
-    console.log(response)
+    if (response.status !== 200) {
+      error('serverProblems')
+    }
+    error('enlaceAgregado')
   })
 
   return div
@@ -108,40 +139,46 @@ const insertTabs = function (options: InsertTabsOptions) {
 }
 
 const getLinks = async function getLinks(url: string, notLinkableURLs: { [key: string]: boolean}) {
-  const fromUrl = <HTMLElement> document.getElementById('fromUrl') || new Element()
-  const toUrl = <HTMLElement> document.getElementById('toUrl') || new Element()
-  var response = await fetch(`${APIURL}/url/${encodeURIComponent(url)}`).then(res => res.json())
+  var response = await fetch(`${API_URL}/url/${encodeURIComponent(url)}`).then(res => res.json())
+  console.log(response)
   if (!response) {
-    fromUrl.remove()
-    toUrl.remove()
     return
   }
 
+  if (response.status !== 200) {
+    throw new Error()
+  }
+
   insertLinks({
+    title: 'toLinksTitle',
     links: response.toUrl,
-    container: toUrl,
     notLinkableURLs
   })
 
   insertLinks({
+    title: 'fromLinksTitle',
     links: response.fromUrl,
-    container: fromUrl,
     notLinkableURLs
   })
+  return
 }
 
 const insertLinks = function (options: InsertLinksOptions) {
+  console.log(options)
   if (!options.links.length) {
-    options.container.remove()
+    return
   }
+  const container = createSection(options.title)
   options.links.forEach( link => {
 
     link.url.forEach(url => {
       options.notLinkableURLs[url] = true
     })
 
-    options.container.insertAdjacentElement('beforeend', createLinkElement(link))
+    container.insertAdjacentElement('beforeend', createLinkElement(link))
   })
+  console.log(container)
+  document.getElementById('menu').appendChild(container)
 }
 
 browser.tabs.query({ active: true, currentWindow: true })
@@ -149,20 +186,21 @@ browser.tabs.query({ active: true, currentWindow: true })
   currentUrl = tabs[0].url
 
   if (!currentUrl.match(/^http/)) {
-    browser.tabs.create({
-      url: 'https://crowdference.org'
-    })
-    return window.close()
+    error('notValidTab')
   }
 
   const notLinkableURLs: { [key: string]: boolean }  = {}
   notLinkableURLs[currentUrl] = true
 
-  await getLinks(currentUrl, notLinkableURLs)
-
+  try {
+    await getLinks(currentUrl, notLinkableURLs)
+  } catch (e) {
+    error('serverProblems')
+    return
+  }
 
   insertTabs({
-    container: <HTMLElement> document.getElementById('linkThisWith') || new Element(),
+    container: <HTMLElement> document.getElementById('linkThisWith') || new HTMLElement(),
     tabs: await browser.tabs.query({
       status: 'complete',
       url: ['http://*/*', 'https://*/*'],
@@ -171,13 +209,9 @@ browser.tabs.query({ active: true, currentWindow: true })
   })
 
   if (document.querySelectorAll('#menu>*').length === 0) {
-    browser.tabs.create({
-      url: 'https://crowdference.org'
-    })
-    return window.close()
+    error('nothingToDo')
   }
 })
-
 
 document.querySelectorAll('[data-locale]').forEach(elem => {
   const l = <HTMLElement> elem

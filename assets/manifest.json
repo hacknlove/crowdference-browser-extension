@@ -27,5 +27,8 @@
       "128": "images/ico128.png"
     },
     "default_locale": "en",
+    "web_accessible_resources": [
+      "popup.js.map"
+    ],
     "manifest_version": 2
   }

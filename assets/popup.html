@@ -1,24 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="popup.css">
+    <meta charset="UTF-8">
+  </head>
 
-<head>
-  <script src="node_modules/webextension-polyfill/dist/browser-polyfill.min.js"></script>
-  <link rel="stylesheet" href="popup.css">
-</head>
-
-<body>
-  <div id="menu">
-    <div id="linkThisWith">
-      <h4 data-locale="createLinkTitle">Link this with</h4>
+  <body>
+    <div id="menu">
+      <div id="linkThisWith">
+        <h4 data-locale="createLinkTitle">Link this with</h4>
+      </div>
     </div>
-    <div id="toUrl">
-      <h4 data-locale="toLinksTitle">Top 10 Related links</h4>
-    </div>
-    <div id="fromUrl">
-      <h4 data-locale="fromLinksTitle">Top 10 Related backlinks</h4>
-    </div>
-  </div>
-  <script src="popup.js"></script>
-</body>
-
+    <script src="popup.js"></script>
+  </body>
 </html>
