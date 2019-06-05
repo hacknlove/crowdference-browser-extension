@@ -1,7 +1,7 @@
   {
     "name": "Crowdference",
     "version": "1.2.0",
-    "description": "https://crowdference.org is a site that allows share custom links between any two web pages. This plugin make it easy to view what pages are custom-linked with the page on the current tab, and to link it with any page on the other tabs.",
+    "description": "The crowdference plugin make it even easier to create collaborative custom links between any two web pages.",
     "permissions": [
       "http://localhost:2900/*",
       "http://localhost:2800/*",
