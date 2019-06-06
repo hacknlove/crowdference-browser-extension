@@ -24,6 +24,10 @@ interface InsertLinksOptions {
   notLinkableURLs: { [key: string]: boolean }
 }
 
+const removeProtocol = function removeProtocol(url: string): string {
+  return url.replace(/^http(s)?:\/\//, '')
+}
+
 const cleanMenu = function cleanMenu (): HTMLElement{
   var myNode = document.getElementById("menu")
   while (myNode.firstChild) {
@@ -63,7 +67,7 @@ const createLinkElement = function createLink (link: Link): HTMLElement {
   const url = document.createElement('a')
 
   if (!link.url[0].match(/^http(s?):\/\//)) {
-    link.url[0] = 'http://' + link.url[0]
+    link.url[0] = link.url[0]
   }
 
   title.innerText = link.title
@@ -92,7 +96,7 @@ const createTabElement = function createLink (tab: Tab): HTMLElement {
 
   img.src = tab.favIconUrl
   title.innerText = tab.title
-  url.innerText = tab.url
+  url.innerText = removeProtocol(tab.url)
 
   div.appendChild(img)
   div.appendChild(title)
@@ -104,7 +108,7 @@ const createTabElement = function createLink (tab: Tab): HTMLElement {
       method: 'POST',
       body: JSON.stringify({
         fromUrl: currentUrl,
-        toUrl: tab.url
+        toUrl: removeProtocol(tab.url)
       }),
       headers: {
         'Content-Type': 'application/json'
@@ -139,7 +143,7 @@ const insertTabs = function (options: InsertTabsOptions) {
 }
 
 const getLinks = async function getLinks(url: string, notLinkableURLs: { [key: string]: boolean}) {
-  var response = await fetch(`${API_URL}/url/${encodeURIComponent(url)}`)
+  var response = await fetch(`${API_URL}/url/${url}`)
   if (response.status !== 200) {
     throw new Error()
   }
@@ -185,6 +189,8 @@ browser.tabs.query({ active: true, currentWindow: true })
   if (!currentUrl.match(/^http/)) {
     error('notValidTab')
   }
+
+  currentUrl = removeProtocol(currentUrl)
 
   const notLinkableURLs: { [key: string]: boolean }  = {}
   notLinkableURLs[currentUrl] = true
