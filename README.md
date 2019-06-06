@@ -37,3 +37,4 @@ npm build
 ## Related repositories:
 * https://github.com/hacknlove/crowdference
 * https://github.com/hacknlove/crowdference-rest
+* https://github.com/hacknlove/crowdference-dev-environment
