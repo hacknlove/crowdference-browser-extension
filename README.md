@@ -34,10 +34,6 @@ npm install
 npm build
 ```
 
-## Related projects:
-
-### crowdference webapp
-https://github.com/hacknlove/crowdference
-
-### crowdference rest-api
-https://github.com/hacknlove/crowdference-rest
+## Related repositories:
+* https://github.com/hacknlove/crowdference
+* https://github.com/hacknlove/crowdference-rest
