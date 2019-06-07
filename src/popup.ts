@@ -130,11 +130,11 @@ const createTabElement = function createLink (tab: Tab): HTMLElement {
 const insertTabs = function (options: InsertTabsOptions) {
   var inserted = false
   options.tabs.forEach(tab => {
-    if (options.notLinkableURLs[tab.url] === true) {
+    if (options.notLinkableURLs[removeProtocol(tab.url)] === true) {
       return
     }
     inserted = true
-    options.notLinkableURLs[tab.url] = true
+    options.notLinkableURLs[removeProtocol(tab.url)] = true
     options.container.insertAdjacentElement('beforeend', createTabElement(tab))
   })
   if (!inserted) {
